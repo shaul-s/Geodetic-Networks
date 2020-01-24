@@ -12,13 +12,18 @@ def geodetic2geocentric(geodeticPoints, a, e):
 
     return np.array(geocentric)
 
-def geocentric2topocentric(geocentricPoints):
-    R = np.array([[-np.sin(np.deg2rad())*np.cos(np.deg2rad()), -np.sin(np.deg2rad), np.cos(np.deg2rad())*np.cos(np.deg2rad())]
-                     ,[-np.sin(np.deg2rad())*np.sin(np.deg2rad()), np.cos(np.deg2rad()), np.cos(np.deg2rad())*np.sin(np.deg2rad())]
-                     ,[np.cos(np.deg2rad()), 0, np.sin(np.deg2rad())]])
+def geocentric2topocentric(geocentricPoints, geoRefPoint):
+    topocentric = []
     refPoint = geocentricPoints[0, :]
+    R = np.array([[-np.sin(np.deg2rad(geoRefPoint[0]))*np.cos(np.deg2rad(geoRefPoint[1])), -np.sin(np.deg2rad(geoRefPoint[1])), np.cos(np.deg2rad(geoRefPoint[0]))*np.cos(np.deg2rad(geoRefPoint[1]))]
+                     ,[-np.sin(np.deg2rad(geoRefPoint[0]))*np.sin(np.deg2rad([1])), np.cos(np.deg2rad(geoRefPoint[1])), np.cos(np.deg2rad(geoRefPoint[0]))*np.sin(np.deg2rad(geoRefPoint[1]))]
+                     ,[np.cos(np.deg2rad(geoRefPoint[0])), 0, np.sin(np.deg2rad(geoRefPoint[0]))]])
 
+    for row in geocentricPoints:
+        topo = np.dot(np.transpose(R), row - refPoint)
+        topocentric.append(topo)
 
+    return np.array(topocentric)
 
 
 if __name__ == "__main__":
@@ -34,6 +39,7 @@ if __name__ == "__main__":
     a = 6378137
     e = 0.081819190842622
     geocentric = geodetic2geocentric(geodeticPoints, a, e)
+    topocentric = geocentric2topocentric(geocentric, geodeticPoints[0, :])
 
 
     print('hi')
